@@ -1,84 +1,96 @@
 -- ============================================================
--- E-Commerce Business Analytics System
+-- COLLEGE EVENT ANALYTICS SYSTEM
 -- Database Schema
 -- ============================================================
 
--- =========================
--- 1. CUSTOMERS
--- =========================
-
-CREATE TABLE customers (
-    customer_id INT PRIMARY KEY,
-    customer_name VARCHAR(100),
-    email VARCHAR(150),
-    city VARCHAR(100),
-    state VARCHAR(100),
-    region VARCHAR(50),
-    signup_date DATE,
-    customer_segment VARCHAR(50)
+CREATE TABLE students (
+    student_id INT PRIMARY KEY,
+    student_name VARCHAR(100),
+    department VARCHAR(50),
+    year INT,
+    section VARCHAR(10),
+    city VARCHAR(100)
 );
 
-
--- =========================
--- 2. PRODUCTS
--- =========================
-
-CREATE TABLE products (
-    product_id INT PRIMARY KEY,
-    product_name VARCHAR(150),
-    category VARCHAR(100),
-    subcategory VARCHAR(100),
-    cost_price DECIMAL(10,2),
-    selling_price DECIMAL(10,2)
+CREATE TABLE events (
+    event_id INT PRIMARY KEY,
+    event_name VARCHAR(150),
+    event_type VARCHAR(50),
+    department VARCHAR(50),
+    event_date DATE,
+    venue VARCHAR(100),
+    capacity INT,
+    registration_fee DECIMAL(10,2),
+    status VARCHAR(30)
 );
 
+CREATE TABLE registrations (
+    registration_id INT PRIMARY KEY,
+    event_id INT,
+    student_id INT,
+    registration_date DATE,
+    registration_status VARCHAR(30),
 
--- =========================
--- 3. ORDERS
--- =========================
+    FOREIGN KEY (event_id)
+        REFERENCES events(event_id),
 
-CREATE TABLE orders (
-    order_id INT PRIMARY KEY,
-    customer_id INT,
-    order_date DATE,
-    payment_method VARCHAR(50),
-    order_status VARCHAR(50),
-
-    FOREIGN KEY (customer_id)
-        REFERENCES customers(customer_id)
+    FOREIGN KEY (student_id)
+        REFERENCES students(student_id)
 );
 
+CREATE TABLE attendance (
+    attendance_id INT PRIMARY KEY,
+    event_id INT,
+    student_id INT,
+    check_in_time DATETIME,
+    attendance_status VARCHAR(30),
 
--- =========================
--- 4. ORDER ITEMS
--- =========================
+    FOREIGN KEY (event_id)
+        REFERENCES events(event_id),
 
-CREATE TABLE order_items (
-    order_item_id INT PRIMARY KEY,
-    order_id INT,
-    product_id INT,
-    quantity INT,
-    discount_percent DECIMAL(5,2),
-
-    FOREIGN KEY (order_id)
-        REFERENCES orders(order_id),
-
-    FOREIGN KEY (product_id)
-        REFERENCES products(product_id)
+    FOREIGN KEY (student_id)
+        REFERENCES students(student_id)
 );
-
-
--- =========================
--- 5. PAYMENTS
--- =========================
 
 CREATE TABLE payments (
     payment_id INT PRIMARY KEY,
-    order_id INT,
+    registration_id INT,
+    amount DECIMAL(10,2),
     payment_date DATE,
-    amount DECIMAL(12,2),
-    payment_status VARCHAR(50),
+    payment_method VARCHAR(30),
+    payment_status VARCHAR(30),
 
-    FOREIGN KEY (order_id)
-        REFERENCES orders(order_id)
+    FOREIGN KEY (registration_id)
+        REFERENCES registrations(registration_id)
+);
+
+CREATE TABLE feedback (
+    feedback_id INT PRIMARY KEY,
+    event_id INT,
+    student_id INT,
+    overall_rating INT,
+    content_rating INT,
+    organization_rating INT,
+    feedback_comment VARCHAR(500),
+    feedback_date DATE,
+
+    FOREIGN KEY (event_id)
+        REFERENCES events(event_id),
+
+    FOREIGN KEY (student_id)
+        REFERENCES students(student_id)
+);
+
+CREATE TABLE certificates (
+    certificate_id INT PRIMARY KEY,
+    event_id INT,
+    student_id INT,
+    certificate_type VARCHAR(50),
+    issue_date DATE,
+
+    FOREIGN KEY (event_id)
+        REFERENCES events(event_id),
+
+    FOREIGN KEY (student_id)
+        REFERENCES students(student_id)
 );
